@@ -11,7 +11,7 @@ trap catch ERR
 SOURCE_DIR=$HOME
 LOCAL_TMP="/tmp/backup-home.tar.gz"
 MAX_BACKUPS=15
-EXCLUDE_DIRS=("**/node_modules" "**/snapshot/*/*.jpg" ".cache" ".docker")
+EXCLUDE_DIRS=("**/node_modules" "**/snapshot/*/*.jpg" ".cache" ".docker" "data/prometheus")
 
 source ~/config/common/storage.env
 
