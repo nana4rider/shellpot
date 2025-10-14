@@ -21,7 +21,7 @@ DEPLOY_TEMP_DIR=$(mktemp -d)
 
 function on_exit {
     local exit_code=$?
-    local deploy_webhook_log="/tmp/deploy-webhook.log"
+    local deploy_webhook_log=$(mktemp)
     local title
     local content
     local payload_json
