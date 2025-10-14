@@ -17,7 +17,7 @@ source ~/config/common/github.env
 source ~/config/common/webhook.env
 
 SERVICE_ID="$1"
-DEPLOY_WEBHOOK_LOG="$2"
+DEPLOY_WEBHOOK_LOG="${2:-}"
 DEPLOY_TEMP_DIR=$(mktemp -d)
 
 function on_exit {
