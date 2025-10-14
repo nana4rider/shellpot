@@ -17,18 +17,18 @@ source ~/config/common/github.env
 source ~/config/common/webhook.env
 
 SERVICE_ID="$1"
+DEPLOY_WEBHOOK_LOG="$2"
 DEPLOY_TEMP_DIR=$(mktemp -d)
 
 function on_exit {
     local exit_code=$?
-    local deploy_webhook_log=$(mktemp)
     local title
     local content
     local payload_json
 
     rm -rf "$DEPLOY_TEMP_DIR"
 
-    if [ -f "$deploy_webhook_log" ]; then
+    if [ -n "$DEPLOY_WEBHOOK_LOG" ]; then
         if [ "$exit_code" -eq 0 ]; then
             title="Success: Deploy"
             content=""
@@ -52,11 +52,11 @@ function on_exit {
         }'
 
         curl -s -X POST \
-            -F "file=@$deploy_webhook_log;filename=deploy_"$(date +%s%3N)".log" \
+            -F "file=@$DEPLOY_WEBHOOK_LOG;filename=deploy_"$(date +%s%3N)".log" \
             -F "payload_json=$payload_json" \
             "$WEBHOOK_DEPLOY"
 
-        rm $deploy_webhook_log
+        rm $DEPLOY_WEBHOOK_LOG
     fi
 }
 trap on_exit EXIT
