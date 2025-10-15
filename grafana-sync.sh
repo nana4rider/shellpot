@@ -3,13 +3,13 @@
 set -eEuo pipefail
 
 function catch {
-    echo "[ERROR] "$(basename $0)"の実行中にエラーが発生しました" 1>&2
-    cd $BASE_DIR && git reset --hard
+    echo "[ERROR] $(basename "$0")の実行中にエラーが発生しました" 1>&2
+    cd "$BASE_DIR" && git reset --hard
     exit 1
 }
 trap catch ERR
 
-source ~/config/grafana-sync/app.env
+source "$HOME/config/grafana-sync/app.env"
 
 BASE_DIR=$HOME/repository/monitoring/grafana/export
 GRAFANA_API="http://$GRAFANA_HOST/api"
@@ -20,7 +20,7 @@ fetch_api() {
     curl -fs --config ~/config/grafana-sync/curl.config -X GET "$GRAFANA_API$path"
 }
 
-cd $BASE_DIR
+cd "$BASE_DIR"
 
 fetch_api "/health" | jq
 

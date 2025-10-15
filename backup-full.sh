@@ -10,8 +10,8 @@ trap catch ERR
 
 MAX_BACKUPS=3
 
-source ~/config/common/storage.env
-source ~/config/common/webhook.env
+source "$HOME/config/common/storage.env"
+source "$HOME/config/common/webhook.env"
 
 function rotate_backups {
     cd "$BACKUP_DIR"
@@ -38,13 +38,13 @@ function create_backup {
     # /dev/sda2       1056768 62500000 61443233 29.3G 83 Linux
     #
     # count = 61443233{sda2のEnd} / 2048 の切り上げを下記コードのcount=に指定する
-    COUNT=$(sudo fdisk -l $STORAGE_SSD1 | tail -n1 | awk '{print int(($4 + 2047) / 2048)}')
-    echo dd count=$COUNT
+    COUNT=$(sudo fdisk -l "$STORAGE_SSD1" | tail -n1 | awk '{print int(($4 + 2047) / 2048)}')
+    echo dd count="$COUNT"
 
-    sudo dd if=$STORAGE_SSD1 of=$BACKUP_DIR/backup-full-1.img oflag=direct bs=1M count=$COUNT
+    sudo dd if="$STORAGE_SSD1" of="$BACKUP_DIR/backup-full-1.img" oflag=direct bs=1M count="$COUNT"
 
     curl -fs -X POST \
-        --json '{"content":"'$HOSTNAME'のフルバックアップが完了しました"}' \
+        --json '{"content":"'"$HOSTNAME"'のフルバックアップが完了しました"}' \
         "$WEBHOOK_BACKUP"
 }
 
