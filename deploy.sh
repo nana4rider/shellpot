@@ -1,9 +1,11 @@
 #!/bin/bash
+# shellcheck disable=SC2317
 
 set -eEuo pipefail
 
+# shellcheck disable=SC2329
 function catch {
-    echo "[ERROR] "$(basename $0)"の実行中にエラーが発生しました" 1>&2
+    echo "[ERROR] $(basename "$0")の実行中にエラーが発生しました" 1>&2
     exit 1
 }
 trap catch ERR
@@ -13,13 +15,14 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-source ~/config/common/github.env
-source ~/config/common/webhook.env
+source "$HOME/config/common/github.env"
+source "$HOME/config/common/webhook.env"
 
 SERVICE_ID="$1"
 DEPLOY_WEBHOOK_LOG="${2:-}"
 DEPLOY_TEMP_DIR=$(mktemp -d)
 
+# shellcheck disable=SC2329
 function on_exit {
     local exit_code=$?
     local title
@@ -46,17 +49,17 @@ function on_exit {
             {
               "title": "'$title'",
               "description": "Service ID: '$SERVICE_ID'",
-              "color": '$(printf '%d' $color)'
+              "color": '$(printf '%d' "$color")'
             }
           ]
         }'
 
         curl -s -X POST \
-            -F "file=@$DEPLOY_WEBHOOK_LOG;filename=deploy_"$(date +%s%3N)".log" \
+            -F "file=@$DEPLOY_WEBHOOK_LOG;filename=deploy_$(date +%s%3N).log" \
             -F "payload_json=$payload_json" \
             "$WEBHOOK_DEPLOY"
 
-        rm $DEPLOY_WEBHOOK_LOG
+        rm "$DEPLOY_WEBHOOK_LOG"
     fi
 }
 trap on_exit EXIT
@@ -69,7 +72,7 @@ function update_repositories {
         "shellpot"
     )
     for name in "${repositories[@]}"; do
-        git -C ~/repository/$name pull &
+        git -C "$HOME/repository/$name" pull &
     done
     wait
     sleep 1
@@ -126,7 +129,7 @@ function check_remote_service_status {
     while ((retry_count < max_wait_seconds / interval)); do
         sleep "$interval"
 
-        status=$(ssh "$host" "systemctl is-active $SERVICE_ID" 2>/dev/null)
+        status=$(ssh "$host systemctl is-active $SERVICE_ID" 2>/dev/null)
 
         case "$status" in
         active)
@@ -139,14 +142,14 @@ function check_remote_service_status {
             ;;
         *)
             echo "❌ Service $SERVICE_ID is in an unexpected state: $status"
-            ssh "$host" "systemctl status $SERVICE_ID --no-pager"
+            ssh "$host systemctl status $SERVICE_ID --no-pager"
             exit 1
             ;;
         esac
     done
 
     echo "❌ Service $SERVICE_ID failed to reach active state on $host within $max_wait_seconds seconds."
-    ssh "$host" "systemctl status $SERVICE_ID --no-pager"
+    ssh "$host systemctl status $SERVICE_ID --no-pager"
     exit 1
 }
 
@@ -201,19 +204,19 @@ if [ "$SERVICE_ID" = "jema2mqtt" ]; then
             exit 1
         }
 
-        ssh "$HOST" "gunzip -f $DEPLOY_DIR/index.mjs.gz" || {
+        ssh "$HOST gunzip -f $DEPLOY_DIR/index.mjs.gz" || {
             echo "❌ Failed to extract file on $HOST."
             exit 1
         }
 
-        ssh "$HOST" "sudo systemctl restart $SERVICE_ID" || {
+        ssh "$HOST sudo systemctl restart $SERVICE_ID" || {
             echo "❌ Failed to restart service on $HOST."
             exit 1
         }
 
         check_remote_service_status "$HOST"
 
-        ssh "$HOST" "journalctl -u $SERVICE_ID --since '30 seconds ago' --no-pager --output cat | sed -E 's/\x1b\[[0-9;]*[mK]//g'"
+        ssh "$HOST journalctl -u $SERVICE_ID --since '30 seconds ago' --no-pager --output cat | sed -E 's/\x1b\[[0-9;]*[mK]//g'"
     done
 
     echo "🎉 Deployment completed successfully."
