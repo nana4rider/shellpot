@@ -30,7 +30,8 @@ awk -F'/' '{print $1}' "$REMOTE_FILES_LIST" | sort -u | while read -r dir; do
     find "$dir" -type f -delete
 done
 
-ssh "${HASS_USER}@${HASS_HOST} tar czf - -C / ${TARGET_FILES[*]}" | tar xzf - -C "."
+TARGET_FILES_QUOTED=$(printf " %q" "${TARGET_FILES[@]}")
+ssh "${HASS_USER}@${HASS_HOST}" 'tar czf - -C / '"${TARGET_FILES_QUOTED}" | tar xzf - -C "."
 
 git add -A
 git commit --author="$COMMIT_AUTHOR" -m "update Home Assistant config files" || true
