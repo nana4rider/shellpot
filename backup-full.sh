@@ -8,8 +8,6 @@ function catch {
 }
 trap catch ERR
 
-MAX_BACKUPS=3
-
 source "$HOME/config/common/storage.env"
 source "$HOME/config/common/webhook.env"
 
@@ -19,12 +17,12 @@ function rotate_backups {
     if [ ! -f backup-full-1.img ]; then
         echo "backup-full-1.img not found, skipping rotation"
         return
-    elif [ -f backup-full-$MAX_BACKUPS.img ]; then
-        sudo rm backup-full-$MAX_BACKUPS.img
+    elif [ -f "backup-full-$MAX_BACKUPS_FULL.img" ]; then
+        sudo rm "backup-full-$MAX_BACKUPS_FULL.img"
     fi
 
     # Shift backups
-    for ((i = MAX_BACKUPS - 1; i >= 1; i--)); do
+    for ((i = MAX_BACKUPS_FULL - 1; i >= 1; i--)); do
         if [ -f backup-full-$i.img ]; then
             sudo mv "backup-full-$i.img" "backup-full-$((i + 1)).img"
         fi

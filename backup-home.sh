@@ -10,7 +10,6 @@ trap catch ERR
 
 SOURCE_DIR=$HOME
 LOCAL_TMP="/tmp/backup-home.tar.gz"
-MAX_BACKUPS=14
 EXCLUDE_DIRS=("**/node_modules" "**/snapshot/*/*.jpg" ".cache" ".docker")
 
 source "$HOME/config/common/storage.env"
@@ -21,12 +20,12 @@ function rotate_backups {
     if [ ! -f backup-home-1.tar.gz ]; then
         echo "backup-home-1.tar.gz not found, skipping rotation"
         return
-    elif [ -f backup-home-$MAX_BACKUPS.tar.gz ]; then
-        sudo rm "backup-home-$MAX_BACKUPS.tar.gz"
+    elif [ -f "backup-home-$MAX_BACKUPS_HOME.tar.gz" ]; then
+        sudo rm "backup-home-$MAX_BACKUPS_HOME.tar.gz"
     fi
 
     # バックアップの世代管理（古いものからずらす）
-    for ((i = MAX_BACKUPS - 1; i >= 1; i--)); do
+    for ((i = MAX_BACKUPS_HOME - 1; i >= 1; i--)); do
         if [ -f backup-home-$i.tar.gz ]; then
             sudo mv "backup-home-$i.tar.gz" "backup-home-$((i + 1)).tar.gz"
         fi
