@@ -17,6 +17,7 @@ fi
 
 source "$HOME/config/common/github.env"
 source "$HOME/config/common/webhook.env"
+source "$HOME/config/common/hass.env"
 
 SERVICE_ID="$1"
 DEPLOY_WEBHOOK_LOG="${2:-}"
@@ -221,6 +222,15 @@ if [ "$SERVICE_ID" = "jema2mqtt" ]; then
 
     echo "🎉 Deployment completed successfully."
     exit 0
+fi
+
+# Home Assistant add-on
+HA_ADDON_SLUG=$(ssh "${HASS_USER}@${HASS_HOST}" "ha addons list --raw-json | jq '.data.addons[] | select(.slug | test(\"_${SERVICE_ID}$\")) | .slug' -r")
+if [ "$HA_ADDON_SLUG" != "" ]; then
+    ssh "${HASS_USER}@${HASS_HOST}" "ha addons update $HA_ADDON_SLUG" || {
+        echo "❌ Failed to update add-on."
+        exit 1
+    }
 fi
 
 echo "❌ [ERROR] Service $SERVICE_ID does not exist." 1>&2

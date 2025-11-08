@@ -9,6 +9,7 @@ function catch {
 }
 trap catch ERR
 
+source "$HOME/config/common/hass.env"
 source "$HOME/config/hass-config-sync/app.env"
 
 BASE_DIR=~/repository/hass-config
