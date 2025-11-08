@@ -225,7 +225,8 @@ if [ "$SERVICE_ID" = "jema2mqtt" ]; then
 fi
 
 # Home Assistant add-on
-HA_ADDON_SLUG=$(ssh "${HASS_USER}@${HASS_HOST}" "ha addons reload && ha addons list --raw-json | jq '.data.addons[] | select(.slug | test(\"_${SERVICE_ID}$\")) | .slug' -r")
+ssh "${HASS_USER}@${HASS_HOST}" "ha addons reload"
+HA_ADDON_SLUG=$(ssh "${HASS_USER}@${HASS_HOST}" "ha addons list --raw-json | jq '.data.addons[] | select(.slug | test(\"_${SERVICE_ID}$\")) | .slug' -r")
 if [ "$HA_ADDON_SLUG" != "" ]; then
     ssh "${HASS_USER}@${HASS_HOST}" "ha addons update $HA_ADDON_SLUG" || {
         echo "❌ Failed to update add-on."
