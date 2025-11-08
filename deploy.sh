@@ -232,6 +232,7 @@ if [ "$HA_ADDON_SLUG" != "" ]; then
         echo "❌ Failed to update add-on."
         exit 1
     }
+    exit 0
 fi
 
 echo "❌ [ERROR] Service $SERVICE_ID does not exist." 1>&2
