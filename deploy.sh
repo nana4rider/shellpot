@@ -122,7 +122,7 @@ function check_container_status {
 function check_remote_service_status {
     local host="$1"
     local retry_count=0
-    local interval=2
+    local interval=5
     local max_wait_seconds=20
     local status
 
