@@ -13,7 +13,7 @@ source "$HOME/config/common/hass.env"
 source "$HOME/config/hass-config-sync/app.env"
 
 BASE_DIR=~/repository/hass-config
-REMOTE_FILES_LIST=~/config/hass-config-sync/files.txt
+REMOTE_FILES_LIST=$BASE_DIR/files.txt
 
 if [[ -f "$REMOTE_FILES_LIST" ]]; then
     mapfile -t TARGET_FILES <"$REMOTE_FILES_LIST"
