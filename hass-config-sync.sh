@@ -37,16 +37,3 @@ ssh "${HASS_USER}@${HASS_HOST}" 'tar czf - -C / '"${TARGET_FILES_QUOTED}" | tar 
 git add -A
 git commit --author="$COMMIT_AUTHOR" -m "update Home Assistant config files" || true
 git push
-
-# Alloy config file
-BASE_DIR=~/repository/monitoring
-
-cd $BASE_DIR
-
-git pull --rebase
-
-scp "${HASS_USER}@${HASS_HOST}:/config/alloy/config.alloy" ~/repository/monitoring/alloy/config_hass.alloy
-
-git add -A
-git commit --author="$COMMIT_AUTHOR" -m "update Alloy config file" || true
-git push
