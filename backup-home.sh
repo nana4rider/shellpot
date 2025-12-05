@@ -10,7 +10,13 @@ trap catch ERR
 
 SOURCE_DIR=$HOME
 LOCAL_TMP="/tmp/backup-home.tar.gz"
-EXCLUDE_DIRS=("**/node_modules" "**/snapshot/*/*.jpg" ".cache" ".docker")
+EXCLUDE_DIRS=(
+    "**/node_modules"
+    "**/snapshot/*/*.jpg"
+    ".cache"
+    ".docker"
+    "data/pocket-id/GeoLite2-City.mmdb"
+)
 
 source "$HOME/config/common/storage.env"
 
