@@ -230,7 +230,7 @@ if [ "$HA_APPS_SLUG" != "" ]; then
     echo "🔄 Reload Apps store..."
     ssh "${HASS_USER}@${HASS_HOST}" "ha store reload"
     echo "🚀 Updating Apps $HA_APPS_SLUG..."
-    ssh "${HASS_USER}@${HASS_HOST}" "ha Apps update $HA_APPS_SLUG" || {
+    ssh "${HASS_USER}@${HASS_HOST}" "ha apps update $HA_APPS_SLUG" || {
         echo "❌ Failed to update Apps."
         exit 1
     }
