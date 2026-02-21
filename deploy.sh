@@ -225,12 +225,12 @@ if [ "$SERVICE_ID" = "jema2mqtt" ]; then
 fi
 
 # Home Assistant Apps
-HA_ADDON_SLUG=$(ssh "${HASS_USER}@${HASS_HOST}" "ha apps list --raw-json | jq '.data.addons[] | select(.slug | test(\"_${SERVICE_ID//-/_}$\")) | .slug' -r")
-if [ "$HA_ADDON_SLUG" != "" ]; then
+HA_APPS_SLUG=$(ssh "${HASS_USER}@${HASS_HOST}" "ha apps list --raw-json | jq '.data.addons[] | select(.slug | test(\"_${SERVICE_ID//-/_}$\")) | .slug' -r")
+if [ "$HA_APPS_SLUG" != "" ]; then
     echo "🔄 Reload Apps store..."
     ssh "${HASS_USER}@${HASS_HOST}" "ha store reload"
-    echo "🚀 Updating Apps $HA_ADDON_SLUG..."
-    ssh "${HASS_USER}@${HASS_HOST}" "ha addons update $HA_ADDON_SLUG" || {
+    echo "🚀 Updating Apps $HA_APPS_SLUG..."
+    ssh "${HASS_USER}@${HASS_HOST}" "ha Apps update $HA_APPS_SLUG" || {
         echo "❌ Failed to update Apps."
         exit 1
     }
