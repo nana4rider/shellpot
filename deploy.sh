@@ -119,41 +119,6 @@ function check_container_status {
     exit 1
 }
 
-function check_remote_service_status {
-    local host="$1"
-    local retry_count=0
-    local interval=5
-    local max_wait_seconds=20
-    local status
-
-    echo "🔍 Checking service status on $host..."
-    while ((retry_count < max_wait_seconds / interval)); do
-        sleep "$interval"
-
-        status=$(ssh "$host" "systemctl is-active $SERVICE_ID" 2>/dev/null)
-
-        case "$status" in
-        active)
-            echo "✅ Service $SERVICE_ID is running on $host."
-            return 0
-            ;;
-        activating)
-            echo "⏳ Service $SERVICE_ID is still activating on $host... ($((retry_count * interval))s elapsed)"
-            ((retry_count++))
-            ;;
-        *)
-            echo "❌ Service $SERVICE_ID is in an unexpected state: $status"
-            ssh "$host" "systemctl status $SERVICE_ID --no-pager"
-            exit 1
-            ;;
-        esac
-    done
-
-    echo "❌ Service $SERVICE_ID failed to reach active state on $host within $max_wait_seconds seconds."
-    ssh "$host" "systemctl status $SERVICE_ID --no-pager"
-    exit 1
-}
-
 # local Docker container
 if [ -f "$HOME/repository/dockyard/$SERVICE_ID/compose.yaml" ]; then
     echo "Processing Docker service for $SERVICE_ID..."
