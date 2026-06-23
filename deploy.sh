@@ -181,49 +181,6 @@ if [ -f "$HOME/repository/dockyard/$SERVICE_ID/compose.yaml" ]; then
     exit 0
 fi
 
-# remote systemd service
-if [ "$SERVICE_ID" = "jema2mqtt" ]; then
-    DEPLOY_TARGETS=("frontdoor.home" "backdoor.home")
-    DEPLOY_DIR=~/app/$SERVICE_ID
-
-    update_repositories
-
-    RELEASE_URL="https://github.com/$GITHUB_USER/$SERVICE_ID/releases/latest/download/index.mjs.gz"
-
-    # Download the latest release artifact
-    echo "Downloading latest release from $RELEASE_URL..."
-    curl -L -o "$DEPLOY_TEMP_DIR/index.mjs.gz" "$RELEASE_URL" || {
-        echo "❌ Failed to download release artifact for $SERVICE_ID."
-        exit 1
-    }
-
-    for HOST in "${DEPLOY_TARGETS[@]}"; do
-        echo "🚀 Deploying to $HOST..."
-
-        scp "$DEPLOY_TEMP_DIR/index.mjs.gz" "$HOST:$DEPLOY_DIR/" || {
-            echo "❌ Failed to copy compressed file to $HOST."
-            exit 1
-        }
-
-        ssh "$HOST" "gunzip -f $DEPLOY_DIR/index.mjs.gz" || {
-            echo "❌ Failed to extract file on $HOST."
-            exit 1
-        }
-
-        ssh "$HOST" "sudo systemctl restart $SERVICE_ID" || {
-            echo "❌ Failed to restart service on $HOST."
-            exit 1
-        }
-
-        check_remote_service_status "$HOST"
-
-        ssh "$HOST" "journalctl -u $SERVICE_ID --since '30 seconds ago' --no-pager --output cat | sed -E 's/\x1b\[[0-9;]*[mK]//g'"
-    done
-
-    echo "🎉 Deployment completed successfully."
-    exit 0
-fi
-
 # Home Assistant Apps
 HA_APPS_SLUG=$(ssh "${HASS_USER}@${HASS_HOST}" "ha apps list --raw-json | jq '.data.addons[] | select(.slug | test(\"_${SERVICE_ID//-/_}$\")) | .slug' -r")
 if [ "$HA_APPS_SLUG" != "" ]; then
