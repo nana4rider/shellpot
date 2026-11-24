@@ -12,7 +12,8 @@ SOURCE_DIR=$HOME
 LOCAL_TMP="/tmp/backup-home.tar.gz"
 EXCLUDE_DIRS=(
     "repository"
-    "data/pocket-id/GeoLite2-City.mmdb"
+    "data/pocket-id/*.mmdb"
+    "data/grafana/plugins"
     "**/node_modules"
     "**/snapshot/*/*.jpg"
     ".cache"
